@@ -1,6 +1,7 @@
 import { BadRequestException, Controller, FileTypeValidator, HttpStatus, MaxFileSizeValidator, ParseFilePipe, Post, UploadedFile, UploadedFiles, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { error } from 'console';
+import { FileSignatureValidator } from 'src/common/validators/file-signature.validator';
 
 @Controller('file-upload')
 export class FileUploadController {
@@ -15,8 +16,11 @@ export class FileUploadController {
             }),
             // 2) Validate the file type (extension)
             new FileTypeValidator({
-                fileType: /png|jpg|jpeg/
-            })
+                fileType: /png|jpg|jpeg|pdf/
+            }),
+
+            // 3) Custom Validation (check file signature)
+            new FileSignatureValidator({})
         ],
         errorHttpStatusCode: HttpStatus.UNSUPPORTED_MEDIA_TYPE,
         exceptionFactory: (error: string) => {
@@ -44,7 +48,10 @@ export class FileUploadController {
             // 2) Validate the file type (extension)
             new FileTypeValidator({
                 fileType: /png|jpg|jpeg/
-            })
+            }),
+
+            // 3) Custom Validation (check file signature)
+            new FileSignatureValidator({})
         ],
         errorHttpStatusCode: HttpStatus.UNSUPPORTED_MEDIA_TYPE,
         exceptionFactory: (error: string) => {
